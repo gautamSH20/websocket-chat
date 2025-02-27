@@ -1,13 +1,32 @@
 import { useRef, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 
 export const Room = () => {
+  const { ws, setAuth } = useAuthStore();
+
   const [creatBox, setCreateBox] = useState(false);
   const roomId: any = useRef();
+
   function onCreate() {
     roomId.current = Math.floor(Math.random() * 100000000);
 
     setCreateBox((e) => !e);
     console.log(roomId.current);
+  }
+
+  function joinRoom() {
+    // ws.onopen = () => {
+    //   ws.send(
+    //     JSON.stringify({
+    //       type: "join",
+    //       payload: {
+
+    //         roomId: roomId.current,
+    //       },
+    //     })
+    //   );
+    // };
+    setAuth();
   }
 
   return (
@@ -29,13 +48,29 @@ export const Room = () => {
           >
             copy
           </a>
+          <button className="btn m-1" onClick={joinRoom}>
+            join
+          </button>
           <button className="btn m-2" onClick={() => setCreateBox((e) => !e)}>
             X
           </button>
         </div>
       )}
       <div className="bg-slate-700 h-2/3 lg:w-1/3 w-1/2 rounded-md p-3 flex flex-col flex-wrap items-center text-lg ">
-        <div className="m-2">Welcom to the IN-CHAT-ROOM </div>
+        <div className="m-2 text-center">
+          <div className="text-lg font-bold mb-2">Welcome to IN-CHAT-ROOM</div>
+          <div>
+            What will you like to do{" "}
+            <span className="font-bold">create a room </span> or would you like
+            to <span className="font-bold">join an exixtig one</span>
+          </div>
+        </div>
+        <div className="mt-8">
+          Want to create a new room{" "}
+          <button className="btn" onClick={onCreate}>
+            Create
+          </button>
+        </div>
         <div className="mt-8">
           Want to create a new room{" "}
           <button className="btn" onClick={onCreate}>
