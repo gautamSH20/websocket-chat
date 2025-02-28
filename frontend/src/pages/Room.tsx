@@ -2,10 +2,11 @@ import { useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 
 export const Room = () => {
-  const { ws, setAuth } = useAuthStore();
+  const { joinRoom, setAuth } = useAuthStore();
 
   const [creatBox, setCreateBox] = useState(false);
   const roomId: any = useRef();
+  const joinId: any = useRef();
 
   function onCreate() {
     roomId.current = Math.floor(Math.random() * 100000000);
@@ -14,18 +15,8 @@ export const Room = () => {
     console.log(roomId.current);
   }
 
-  function joinRoom() {
-    // ws.onopen = () => {
-    //   ws.send(
-    //     JSON.stringify({
-    //       type: "join",
-    //       payload: {
-
-    //         roomId: roomId.current,
-    //       },
-    //     })
-    //   );
-    // };
+  function joinRoom1() {
+    joinRoom({ roomId: roomId.current });
     setAuth();
   }
 
@@ -48,7 +39,7 @@ export const Room = () => {
           >
             copy
           </a>
-          <button className="btn m-1" onClick={joinRoom}>
+          <button className="btn m-1" onClick={joinRoom1}>
             join
           </button>
           <button className="btn m-2" onClick={() => setCreateBox((e) => !e)}>
@@ -72,9 +63,24 @@ export const Room = () => {
           </button>
         </div>
         <div className="mt-8">
-          Want to create a new room{" "}
-          <button className="btn" onClick={onCreate}>
-            Create
+          <p>Would you like to join a room</p>
+          <input
+            ref={joinId}
+            type="text"
+            placeholder="write the code"
+            className="input "
+          />
+          <button
+            className="btn"
+            onClick={() => {
+              const id = joinId.current?.value;
+              if (id !== null) {
+                joinRoom({ roomId: id });
+                setAuth();
+              }
+            }}
+          >
+            join
           </button>
         </div>
       </div>

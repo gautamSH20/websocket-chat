@@ -1,25 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 
 function MsgBox() {
-  const [message, setMessage] = useState([""]);
-  const wsRef: any = useRef();
+  const [message, setMessage] = useState<string[]>([]);
+
   const inputRef: any = useRef();
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3000");
+  const { ws } = useAuthStore();
 
-    ws.onmessage = (event) => {
-      setMessage((m) => [...m, event.data]);
-    };
-    wsRef.current = ws;
-    return () => {
-      ws.close();
-    };
-  }, []);
+  ws.onmessage = (evet) => {
+    setMessage((m) => [...m, evet.data]);
+  };
 
+  function sendMsg() {
+    const message = inputRef.current?.value;
+
+    if (message && ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: "chat",
+          payload: {
+            message: message,
+          },
+        })
+      );
+    }
+  }
   return (
     <div className="bg-black h-[100vh] flex flex-col justify-center items-center">
       <div className="bg-slate-700 h-2/3 w-2/3 rounded-lg p-2">
-        <div className="mt-5 h-3/4 overflow w-full">
+        <div className="mt-5 h-3/4 overflow-auto w-full">
           {message.map((itemes) => (
             <>
               {itemes != "" ? (
@@ -38,21 +47,7 @@ function MsgBox() {
             placeholder="Enter the chat"
             className="flex-1 input"
           ></input>
-          <button
-            onClick={() => {
-              const message = inputRef.current?.value;
-              wsRef.current.send(
-                JSON.stringify({
-                  type: "chat",
-                  payload: {
-                    message: message,
-                  },
-                })
-              );
-              inputRef.current.value = "";
-            }}
-            className="btn p-2"
-          >
+          <button onClick={sendMsg} className="btn p-2">
             send Msg
           </button>
         </div>
